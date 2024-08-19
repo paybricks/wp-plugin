@@ -22,17 +22,20 @@ function paybricks_register_settings() {
     // This controls which PHP code file will be pulled from PayBricks' server to integrate PayBricks into this WP site
     register_setting('paybricks_options', 'paybricks_integration_id');
 
-    // PayBricks always tests its code before releasing it to active WP sites.
-    // If you wish, you may choose to inspect each code change yourself. Specifying a SHA256 in this field will cause the PayBricks
-    // plugin to download and execute only code files which match that hash. Note that this means you will need to manually
-    // re-inspect code updates and re-calculate the hash every time an update has been released by PayBricks.
-    // E-mail us at support@paybricks.io to be added to our code updates distribution list
-    register_setting('paybricks_options', 'paybricks_enforced_code_hash');    
+    register_setting('paybricks_options', 'paybricks_enforced_code_hash', array('default' => 'stable'));    
+
+    register_setting('paybricks_options', 'paybricks_adblocker_params');    
 
     add_settings_section('paybricks_section', 'Integration Settings', '', 'paybricks');
     add_settings_field('integration_id', 'Integration ID', 'paybricks_integration_id_callback', 'paybricks', 'paybricks_section');
-    add_settings_field('enforced_code_hash', 'Focused Browsing code', 'paybricks_enforced_code_hash_callback', 'paybricks', 'paybricks_section');
-    add_settings_field('ip_filter', 'IP filter (comma-seperated)', 'paybricks_ip_filter_callback', 'paybricks', 'paybricks_section');
+    add_settings_field('enforced_code_hash', 'Release channel', 'paybricks_enforced_code_hash_callback', 'paybricks', 'paybricks_section');
+    // add_settings_field('ip_filter', 'IP filter (comma-seperated)', 'paybricks_ip_filter_callback', 'paybricks', 'paybricks_section');
+    add_settings_field('adblocker_params', 'Extra custom params (advanced only)', 'paybricks_adblocker_params_callback', 'paybricks', 'paybricks_section');
+}
+
+function paybricks_adblocker_params_callback() {
+    $value = get_option('paybricks_adblocker_params');
+    echo '<input type="text" name="paybricks_adblocker_params" value="' . esc_attr($value) . '">';
 }
 
 function paybricks_ip_filter_callback() {
@@ -55,3 +58,4 @@ add_action('admin_menu', function () {
 });
 
 add_action('admin_init', 'paybricks_register_settings');
+
