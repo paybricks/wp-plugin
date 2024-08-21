@@ -2,7 +2,7 @@
 /**
  * Plugin Name: PayBricks
  * Description: Provides an enchanced experience for readers using microtransactions.
- * Version: 0.0.5
+ * Version: 0.0.9
  * Author: PayBricks Software LLC
  */
 
@@ -42,11 +42,16 @@ add_action('paybricks_adblocker_downloader_cron_job', 'paybricks_adlocker_downlo
 function paybricks_adlocker_download_phar() {
 
     try {
-        paybricks_adlocker_download_phar_for('stable');
-        paybricks_adlocker_download_phar_for('next');
-        paybricks_adlocker_download_phar_for('beta');
+
+        $channel = trim(get_option('paybricks_enforced_code_hash', 'stable'));
+
+        if ($channel == null || $channel == '') {
+            $channel = 'stable';
+        }
+
+        paybricks_adlocker_download_phar_for($channel);
     } catch(Exception $e) {
-        error_log('failed to download phars for all versions');
+        error_log('failed to download phars');
     }
 }
 
